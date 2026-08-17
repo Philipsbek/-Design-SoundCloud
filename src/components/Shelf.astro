@@ -1,0 +1,88 @@
+---
+export interface Props { title: string; subtitle?: string; viewAll?: boolean; }
+const { title, subtitle, viewAll = true } = Astro.props;
+---
+<section class="shelf reveal" data-shelf>
+  <div class="shelf__head">
+    <div class="shelf__titles">
+      <h2 class="shelf__title">{title}</h2>
+      {subtitle && <p class="shelf__sub">{subtitle}</p>}
+    </div>
+    {viewAll && <a href="#" class="shelf__viewall">View all</a>}
+  </div>
+
+  <div class="shelf__viewport">
+    <button class="shelf__arrow shelf__arrow--prev" aria-label="Scroll left">
+      <svg viewBox="0 0 24 24" width="20" height="20"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="shelf__track" data-track>
+      <slot />
+    </div>
+    <button class="shelf__arrow shelf__arrow--next" aria-label="Scroll right">
+      <svg viewBox="0 0 24 24" width="20" height="20"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+  <p class="shelf__empty">No results in this section.</p>
+</section>
+
+<style>
+  .shelf { margin-bottom: var(--s48); }
+  .shelf.is-empty { display: none; }
+
+  .shelf__head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--s16); margin-bottom: var(--s16); }
+  .shelf__title { font-size: var(--text-xl); font-weight: 600; letter-spacing: -.01em; }
+  .shelf__sub { color: var(--color-fog); font-size: var(--text-body-sm); margin-top: 2px; }
+  .shelf__viewall { color: var(--color-fog); font-size: var(--text-body-sm); font-weight: 600; white-space: nowrap; transition: color .18s ease; }
+  .shelf__viewall:hover { color: var(--color-white); }
+
+  .shelf__viewport { position: relative; }
+  .shelf__track {
+    display: grid; grid-auto-flow: column; grid-auto-columns: minmax(160px, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--s16);
+    overflow-x: auto; scroll-snap-type: x proximity; scroll-behavior: smooth;
+    padding-bottom: var(--s8);
+    scrollbar-width: none;
+  }
+  .shelf__track::-webkit-scrollbar { display: none; }
+  .shelf__track > * { scroll-snap-align: start; }
+
+  .shelf__arrow {
+    position: absolute; top: calc(50% - 26px); transform: translateY(-50%);
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--color-white); color: var(--color-obsidian);
+    display: grid; place-items: center; z-index: 5;
+    box-shadow: 0 4px 16px rgba(0,0,0,.5);
+    opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .15s ease;
+  }
+  .shelf__viewport:hover .shelf__arrow { opacity: 1; pointer-events: auto; }
+  .shelf__arrow:hover { transform: translateY(-50%) scale(1.08); }
+  .shelf__arrow--prev { left: -12px; }
+  .shelf__arrow--next { right: -12px; }
+  .shelf__arrow[disabled] { opacity: 0 !important; pointer-events: none; }
+
+  .shelf__empty { display: none; color: var(--color-fog); padding: var(--s24) 0; }
+  .shelf.is-empty .shelf__empty { display: block; }
+
+  @media (max-width: 560px) { .shelf__arrow { display: none; } }
+</style>
+
+<script>
+  document.querySelectorAll('.shelf__viewport').forEach((vp) => {
+    const track = vp.querySelector('[data-track]');
+    const prev = vp.querySelector('.shelf__arrow--prev');
+    const next = vp.querySelector('.shelf__arrow--next');
+    if (!track) return;
+    const page = () => Math.max(track.clientWidth * 0.8, 240);
+    const update = () => {
+      const max = track.scrollWidth - track.clientWidth - 2;
+      prev?.toggleAttribute('disabled', track.scrollLeft <= 2);
+      next?.toggleAttribute('disabled', track.scrollLeft >= max);
+    };
+    prev?.addEventListener('click', () => track.scrollBy({ left: -page(), behavior: 'smooth' }));
+    next?.addEventListener('click', () => track.scrollBy({ left: page(), behavior: 'smooth' }));
+    track.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  });
+</script>

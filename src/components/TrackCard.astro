@@ -1,0 +1,73 @@
+---
+import { art } from '../data/content.js';
+export interface Props { title: string; artist: string; plays?: string; seed: string; }
+const { title, artist, plays, seed } = Astro.props;
+const cover = art(seed, 320);
+const search = `${title} ${artist}`.toLowerCase();
+---
+<article
+  class="tc"
+  data-search={search}
+  data-play
+  data-title={title}
+  data-artist={artist}
+  data-cover={cover}
+>
+  <div class="tc__art">
+    <img class="tc__img" src={cover} alt={`${title} by ${artist}`} loading="lazy" />
+    <button class="tc__play" aria-label={`Play ${title}`}>
+      <svg class="tc__playIcon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+      <svg class="tc__pauseIcon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg>
+    </button>
+    {plays && (
+      <span class="tc__plays">
+        <svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>{plays}
+      </span>
+    )}
+  </div>
+  <h3 class="tc__title">{title}</h3>
+  <p class="tc__artist">{artist}</p>
+</article>
+
+<style>
+  .tc { min-width: 0; }
+  .tc.is-filtered { display: none; }
+  .tc__art { position: relative; aspect-ratio: 1/1; border-radius: var(--radius); overflow: hidden; background: var(--color-graphite); }
+  .tc__img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s cubic-bezier(.16,1,.3,1), filter .25s ease; }
+  .tc:hover .tc__img { transform: scale(1.05); filter: brightness(.72); }
+
+  .tc__play {
+    position: absolute; left: var(--s8); bottom: var(--s8);
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--color-orange); color: #fff;
+    display: grid; place-items: center;
+    opacity: 0; transform: translateY(6px);
+    box-shadow: 0 6px 18px rgba(0,0,0,.45);
+    transition: opacity .2s ease, transform .2s ease, background .18s ease;
+  }
+  .tc:hover .tc__play, .tc.is-playing .tc__play { opacity: 1; transform: none; }
+  .tc__play:hover { background: var(--color-orange-hi); }
+  .tc__pauseIcon { display: none; }
+  .tc.is-playing .tc__playIcon { display: none; }
+  .tc.is-playing .tc__pauseIcon { display: block; }
+
+  .tc__plays {
+    position: absolute; right: var(--s8); bottom: var(--s8);
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; color: #fff; background: rgba(0,0,0,.6);
+    padding: 3px 7px; border-radius: var(--radius);
+    opacity: 0; transition: opacity .2s ease;
+  }
+  .tc:hover .tc__plays { opacity: 1; }
+
+  .tc__title {
+    margin-top: var(--s12); font-size: var(--text-body-sm); font-weight: 600; color: var(--color-white);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .tc.is-playing .tc__title { color: var(--color-orange); }
+  .tc__artist {
+    margin-top: 2px; font-size: var(--text-body-sm); color: var(--color-fog);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color .18s ease;
+  }
+  .tc:hover .tc__artist { color: var(--color-silver); }
+</style>

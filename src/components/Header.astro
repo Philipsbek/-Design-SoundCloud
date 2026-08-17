@@ -1,0 +1,198 @@
+---
+const nav = [
+  { label: 'Home', href: '/', active: true },
+  { label: 'Feed', href: '#feed' },
+  { label: 'Library', href: '#library' },
+];
+---
+<header class="hd" id="app-header">
+  <div class="hd__inner">
+    <!-- logo -->
+    <a class="hd__logo" href="/" aria-label="SoundCloud">
+      <svg class="hd__cloud" viewBox="0 0 40 24" width="26" height="16" aria-hidden="true">
+        <g fill="currentColor">
+          <rect x="0"  y="12" width="2" height="7"  rx="1"/>
+          <rect x="3"  y="9"  width="2" height="10" rx="1"/>
+          <rect x="6"  y="6"  width="2" height="13" rx="1"/>
+          <rect x="9"  y="10" width="2" height="9"  rx="1"/>
+        </g>
+        <path d="M14 19h18a5 5 0 0 0 .3-9.98A8 8 0 0 0 16.9 8 4.5 4.5 0 0 0 14 12.5V19z" fill="currentColor"/>
+      </svg>
+      <span class="hd__word">SOUNDCLOUD</span>
+    </a>
+
+    <!-- primary nav -->
+    <nav class="hd__nav" aria-label="Primary">
+      {nav.map((n) => (
+        <a href={n.href} class:list={["hd__navItem", { 'is-active': n.active }]}>{n.label}</a>
+      ))}
+    </nav>
+
+    <!-- search -->
+    <form class="hd__search" role="search" onsubmit="return false;">
+      <input
+        id="app-search"
+        class="hd__searchInput"
+        type="text"
+        placeholder="Search for artists, bands, tracks, podcasts"
+        autocomplete="off"
+        aria-label="Search"
+      />
+      <button class="hd__searchBtn" aria-label="Search">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/>
+          <line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </form>
+
+    <!-- right cluster -->
+    <div class="hd__right">
+      <a href="#" class="hd__link hd__try">Try Artist Pro</a>
+      <a href="#" class="btn hd__signin">Sign in</a>
+      <a href="#" class="btn btn-primary">Create account</a>
+      <a href="#" class="hd__upload">Upload</a>
+      <button class="hd__kebab" aria-label="Settings and more">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <circle cx="5" cy="12" r="1.8" fill="currentColor"/>
+          <circle cx="12" cy="12" r="1.8" fill="currentColor"/>
+          <circle cx="19" cy="12" r="1.8" fill="currentColor"/>
+        </svg>
+      </button>
+      <button class="hd__burger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+
+  <!-- mobile drawer -->
+  <div class="hd__drawer" id="hd-drawer">
+    {nav.map((n) => <a href={n.href} class="hd__drawerLink">{n.label}</a>)}
+    <a href="#" class="hd__drawerLink">Upload</a>
+    <a href="#" class="hd__drawerLink">Sign in</a>
+    <a href="#" class="btn btn-primary hd__drawerCta">Create account</a>
+  </div>
+</header>
+
+<style>
+  .hd {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+    height: var(--header-h);
+    background: var(--color-obsidian);
+    box-shadow: inset 0 -1px 0 var(--hairline);
+  }
+  .hd__inner {
+    max-width: var(--page-max); margin: 0 auto; height: 100%;
+    display: flex; align-items: center; gap: var(--s16);
+    padding-inline: var(--s16);
+  }
+
+  .hd__logo { display: inline-flex; align-items: center; gap: 6px; color: var(--color-white); flex: none; }
+  .hd__cloud { color: var(--color-white); }
+  .hd__word { font-size: 15px; font-weight: 700; letter-spacing: .01em; }
+
+  .hd__nav { display: flex; align-items: center; gap: var(--s4); flex: none; }
+  .hd__navItem {
+    color: var(--color-fog); font-size: var(--text-body-sm); font-weight: 600;
+    padding: 0 var(--s12); height: var(--header-h); display: inline-flex; align-items: center;
+    position: relative; transition: color .18s ease;
+  }
+  .hd__navItem:hover { color: var(--color-white); }
+  .hd__navItem.is-active { color: var(--color-white); }
+  .hd__navItem.is-active::after {
+    content: ''; position: absolute; left: var(--s12); right: var(--s12); bottom: 0; height: 2px;
+    background: var(--color-orange);
+  }
+
+  .hd__search { position: relative; flex: 1 1 auto; max-width: 480px; }
+  .hd__searchInput {
+    width: 100%; height: 36px;
+    background: var(--color-graphite); color: var(--color-white);
+    border: none; outline: none; border-radius: 3px;
+    padding: 0 40px 0 var(--s12);
+    font-size: var(--text-body-sm);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+    transition: box-shadow .18s ease, background .18s ease;
+  }
+  .hd__searchInput::placeholder { color: var(--color-fog); }
+  .hd__searchInput:focus { box-shadow: inset 0 0 0 1px var(--color-orange); background: #363636; }
+  .hd__searchBtn {
+    position: absolute; right: 0; top: 0; height: 36px; width: 38px;
+    display: grid; place-items: center; color: var(--color-fog);
+    box-shadow: inset 1px 0 0 rgba(255,255,255,.06);
+    transition: color .18s ease;
+  }
+  .hd__searchBtn:hover { color: var(--color-white); }
+
+  .hd__right { display: flex; align-items: center; gap: var(--s12); flex: none; }
+  .hd__link, .hd__upload, .hd__try {
+    color: var(--color-fog); font-size: var(--text-body-sm); font-weight: 600;
+    transition: color .18s ease; white-space: nowrap;
+  }
+  .hd__try { color: var(--color-orange); }
+  .hd__try:hover { color: var(--color-orange-hi); }
+  .hd__upload:hover, .hd__link:hover { color: var(--color-white); }
+  .hd__signin { color: var(--color-white); padding-inline: var(--s12); }
+  .hd__signin:hover { background: rgba(255,255,255,.08); }
+  .hd__kebab { color: var(--color-fog); width: 28px; height: 28px; display: grid; place-items: center; border-radius: var(--radius); transition: color .18s ease, background .18s ease; }
+  .hd__kebab:hover { color: var(--color-white); background: rgba(255,255,255,.08); }
+
+  .hd__burger { display: none; width: 36px; height: 36px; flex-direction: column; justify-content: center; align-items: center; gap: 4px; }
+  .hd__burger span { width: 18px; height: 2px; background: var(--color-white); border-radius: 2px; transition: transform .3s ease, opacity .2s ease; }
+  .hd__burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+  .hd__burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+  .hd__burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+  .hd__drawer {
+    position: absolute; top: var(--header-h); left: 0; right: 0;
+    background: var(--color-obsidian); box-shadow: inset 0 -1px 0 var(--hairline);
+    display: flex; flex-direction: column; padding: 0 var(--s16);
+    max-height: 0; overflow: hidden; opacity: 0;
+    transition: max-height .35s cubic-bezier(.16,1,.3,1), opacity .25s ease, padding .35s ease;
+  }
+  .hd__drawer.is-open { max-height: 60vh; opacity: 1; padding: var(--s8) var(--s16) var(--s20); }
+  .hd__drawerLink { color: var(--color-silver); font-size: var(--text-body); padding: var(--s16) 0; box-shadow: inset 0 -1px 0 var(--hairline); }
+  .hd__drawerLink:hover { color: var(--color-white); }
+  .hd__drawerCta { margin-top: var(--s16); width: 100%; }
+
+  /* responsive collapse */
+  @media (max-width: 1080px) { .hd__try { display: none; } }
+  @media (max-width: 920px)  { .hd__nav { display: none; } .hd__upload { display: none; } }
+  @media (max-width: 720px) {
+    .hd__search { max-width: none; }
+    .hd__signin, .hd__kebab { display: none; }
+  }
+  @media (max-width: 560px) {
+    .hd__right .btn-primary { display: none; }
+    .hd__burger { display: flex; }
+    .hd__searchInput { font-size: 13px; }
+  }
+</style>
+
+<script>
+  const header = document.getElementById('app-header');
+  const burger = header?.querySelector('.hd__burger');
+  const drawer = document.getElementById('hd-drawer');
+  const setMenu = (open) => {
+    burger?.setAttribute('aria-expanded', String(open));
+    drawer?.classList.toggle('is-open', open);
+  };
+  burger?.addEventListener('click', (e) => { e.stopPropagation(); setMenu(burger.getAttribute('aria-expanded') !== 'true'); });
+  drawer?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
+  document.addEventListener('click', (e) => { if (header && !header.contains(e.target)) setMenu(false); });
+
+  // Live filter across the discover feed
+  const search = document.getElementById('app-search');
+  const applyFilter = (q) => {
+    q = q.toLowerCase().trim();
+    document.querySelectorAll('[data-search]').forEach((el) => {
+      const hit = !q || el.getAttribute('data-search').includes(q);
+      el.classList.toggle('is-filtered', !hit);
+    });
+    document.querySelectorAll('[data-shelf]').forEach((shelf) => {
+      const anyVisible = shelf.querySelectorAll('[data-search]:not(.is-filtered)').length > 0;
+      shelf.classList.toggle('is-empty', q && !anyVisible);
+    });
+    document.body.classList.toggle('is-searching', !!q);
+  };
+  search?.addEventListener('input', (e) => applyFilter(e.target.value));
+</script>

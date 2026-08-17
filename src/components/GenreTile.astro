@@ -1,0 +1,31 @@
+---
+import { art } from '../data/content.js';
+export interface Props { name: string; seed: string; tint: string; }
+const { name, seed, tint } = Astro.props;
+const cover = art(seed, 320);
+---
+<a class="gt" href="#" data-search={name.toLowerCase()} style={`--tint:${tint}`}>
+  <div class="gt__art">
+    <img class="gt__img" src={cover} alt={name} loading="lazy" />
+    <span class="gt__wash"></span>
+    <span class="gt__name">{name}</span>
+  </div>
+</a>
+
+<style>
+  .gt { display: block; min-width: 0; }
+  .gt.is-filtered { display: none; }
+  .gt__art { position: relative; aspect-ratio: 1/1; border-radius: var(--radius); overflow: hidden; }
+  .gt__img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s cubic-bezier(.16,1,.3,1); }
+  .gt:hover .gt__img { transform: scale(1.06); }
+  .gt__wash {
+    position: absolute; inset: 0;
+    background: linear-gradient(160deg, color-mix(in srgb, var(--tint) 70%, transparent) 0%, rgba(18,18,18,.35) 55%, rgba(18,18,18,.85) 100%);
+    mix-blend-mode: multiply;
+  }
+  .gt__name {
+    position: absolute; left: var(--s12); bottom: var(--s12);
+    font-size: var(--text-lg); font-weight: 700; color: #fff;
+    text-shadow: 0 1px 8px rgba(0,0,0,.5); letter-spacing: -.01em;
+  }
+</style>

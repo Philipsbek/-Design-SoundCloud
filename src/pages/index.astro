@@ -1,0 +1,71 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import PlayBar from '../components/PlayBar.astro';
+import Footer from '../components/Footer.astro';
+import Shelf from '../components/Shelf.astro';
+import TrackCard from '../components/TrackCard.astro';
+import GenreTile from '../components/GenreTile.astro';
+import ArtistCard from '../components/ArtistCard.astro';
+import PlaylistCard from '../components/PlaylistCard.astro';
+import { genres, charts, newHot, artists, playlists } from '../data/content.js';
+---
+<Base>
+  <Header />
+
+  <main class="feed">
+    <div class="container">
+      <div class="feed__head reveal">
+        <h1 class="feed__title">Discover Tracks and Playlists</h1>
+        <p class="feed__sub">Hear what’s trending for free in the SoundCloud community</p>
+      </div>
+      <p class="feed__noResults" id="feed-noresults">No tracks match your search.</p>
+
+      <Shelf title="Trending by genre" subtitle="Explore the sounds moving the community right now">
+        {genres.map((g) => <GenreTile name={g.name} seed={g.seed} tint={g.tint} />)}
+      </Shelf>
+
+      <Shelf title="Charts: Top 50" subtitle="The most played tracks this week">
+        {charts.map((t) => <TrackCard title={t.title} artist={t.artist} plays={t.plays} seed={t.seed} />)}
+      </Shelf>
+
+      <Shelf title="Artists to watch out for">
+        {artists.map((a) => <ArtistCard name={a.name} followers={a.followers} seed={a.seed} />)}
+      </Shelf>
+
+      <Shelf title="New & hot" subtitle="Fresh uploads climbing fast">
+        {newHot.map((t) => <TrackCard title={t.title} artist={t.artist} plays={t.plays} seed={t.seed} />)}
+      </Shelf>
+
+      <Shelf title="Curated by SoundCloud">
+        {playlists.map((p) => <PlaylistCard title={p.title} by={p.by} tracks={p.tracks} seed={p.seed} />)}
+      </Shelf>
+    </div>
+
+    <Footer />
+  </main>
+
+  <PlayBar />
+</Base>
+
+<style>
+  .feed { padding-top: var(--s32); }
+  .feed__head { margin-bottom: var(--s32); }
+  .feed__title { font-size: var(--text-h1); font-weight: 600; letter-spacing: -.01em; }
+  .feed__sub { color: var(--color-fog); font-size: var(--text-body); margin-top: var(--s8); }
+
+  .feed__noResults { display: none; color: var(--color-fog); padding: var(--s48) 0; text-align: center; }
+  body.is-searching .feed__title::after { content: ' — filtered'; color: var(--color-orange); font-weight: 400; }
+</style>
+
+<script>
+  // Show a global "no results" message when every shelf is empty during search
+  const noRes = document.getElementById('feed-noresults');
+  const search = document.getElementById('app-search');
+  const check = () => {
+    const anyVisible = [...document.querySelectorAll('[data-shelf]')].some((s) => !s.classList.contains('is-empty'));
+    const searching = document.body.classList.contains('is-searching');
+    if (noRes) noRes.style.display = searching && !anyVisible ? 'block' : 'none';
+  };
+  search?.addEventListener('input', () => requestAnimationFrame(check));
+</script>
